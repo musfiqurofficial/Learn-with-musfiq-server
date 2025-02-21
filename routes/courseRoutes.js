@@ -268,12 +268,10 @@ router.post(
       await user.save();
 
       console.log("Video marked as watched:", lectureId);
-      res
-        .status(200)
-        .json({
-          message: "Video marked as watched",
-          watchedVideos: user.watchedVideos,
-        });
+      res.status(200).json({
+        message: "Video marked as watched",
+        watchedVideos: user.watchedVideos,
+      });
     } catch (error) {
       console.error("Error marking video as watched:", error);
       res
@@ -283,7 +281,7 @@ router.post(
   }
 );
 
-router.get("/watched-videos", authenticate, async (req, res) => {
+router.get("/user/watched-videos", authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("watchedVideos");
     if (!user) {
