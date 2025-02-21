@@ -281,7 +281,7 @@ router.post(
   }
 );
 
-router.get("/user/watched-videos", authenticate, async (req, res) => {
+router.get("/watched-videos", authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("watchedVideos");
     if (!user) {
