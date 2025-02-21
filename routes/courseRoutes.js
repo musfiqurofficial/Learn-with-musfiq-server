@@ -267,4 +267,18 @@ router.post("/courses/:courseId/modules/:moduleId/lectures/:lectureId/watch", au
   }
 });
 
+router.get("/user/watched-videos", authenticate, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("watchedVideos");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ watchedVideos: user.watchedVideos });
+  } catch (error) {
+    console.error("Error fetching watched videos:", error);
+    res.status(500).json({ message: "Error fetching watched videos", error });
+  }
+});
+
 module.exports = router;
