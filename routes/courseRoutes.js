@@ -239,66 +239,31 @@ router.get("/user-courses", authenticate, async (req, res) => {
   }
 });
 
-router.post("/courses/:courseId/lectures/:lectureId/complete", authenticate, async (req, res) => {
+router.post("/courses/:courseId/modules/:moduleId/lectures/:lectureId/watch", authenticate, async (req, res) => {
   try {
-    const { courseId, lectureId } = req.params;
+    const { courseId, moduleId, lectureId } = req.params;
     const userId = req.user.id;
 
-    // Check if the user exists
+    console.log("Marking video as watched:", { userId, courseId, moduleId, lectureId });
+
     const user = await User.findById(userId);
     if (!user) {
+      console.error("User not found:", userId);
       return res.status(404).json({ message: "User not found" });
     }
-
-    // Check if the lecture is already marked as completed
-    if (user.completedLectures.includes(lectureId)) {
-      return res.status(400).json({ message: "Lecture already marked as completed" });
+    if (user.watchedVideos.includes(lectureId)) {
+      console.error("Video already watched:", lectureId);
+      return res.status(400).json({ message: "Video already watched" });
     }
 
-    // Mark the lecture as completed
-    user.completedLectures.push(lectureId);
+    user.watchedVideos.push(lectureId);
     await user.save();
 
-    res.status(200).json({ message: "Lecture marked as completed" });
+    console.log("Video marked as watched:", lectureId);
+    res.status(200).json({ message: "Video marked as watched", watchedVideos: user.watchedVideos });
   } catch (error) {
-    console.error("Error marking lecture as completed:", error);
-    res.status(500).json({ message: "Error marking lecture as completed", error });
-  }
-});
-
-router.get("/courses/:courseId/progress", authenticate, async (req, res) => {
-  try {
-    const { courseId } = req.params;
-    const userId = req.user.id;
-
-    // Fetch the course and user
-    const course = await Course.findById(courseId);
-    const user = await User.findById(userId);
-
-    if (!course || !user) {
-      return res.status(404).json({ message: "Course or user not found" });
-    }
-
-    // Calculate total lectures in the course
-    const totalLectures = course.modules.reduce((acc, module) => acc + module.lectures.length, 0);
-
-    // Calculate completed lectures
-    const completedLectures = user.completedLectures.filter((lectureId) =>
-      course.modules.some((module) =>
-        module.lectures.some((lecture) => lecture._id.toString() === lectureId.toString())
-    ));
-
-    // Calculate progress percentage
-    const progressPercentage = (completedLectures.length / totalLectures) * 100;
-
-    res.status(200).json({
-      totalLectures,
-      completedLectures: completedLectures.length,
-      progressPercentage,
-    });
-  } catch (error) {
-    console.error("Error fetching progress:", error);
-    res.status(500).json({ message: "Error fetching progress", error });
+    console.error("Error marking video as watched:", error);
+    res.status(500).json({ message: "Error marking video as watched", error });
   }
 });
 
