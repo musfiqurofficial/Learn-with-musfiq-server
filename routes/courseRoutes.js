@@ -239,35 +239,51 @@ router.get("/user-courses", authenticate, async (req, res) => {
   }
 });
 
-router.post("/courses/:courseId/modules/:moduleId/lectures/:lectureId/watch", authenticate, async (req, res) => {
-  try {
-    const { courseId, moduleId, lectureId } = req.params;
-    const userId = req.user.id;
+router.post(
+  "/courses/:courseId/modules/:moduleId/lectures/:lectureId/watch",
+  authenticate,
+  async (req, res) => {
+    try {
+      const { courseId, moduleId, lectureId } = req.params;
+      const userId = req.user.id;
 
-    console.log("Marking video as watched:", { userId, courseId, moduleId, lectureId });
+      console.log("Marking video as watched:", {
+        userId,
+        courseId,
+        moduleId,
+        lectureId,
+      });
 
-    const user = await User.findById(userId);
-    if (!user) {
-      console.error("User not found:", userId);
-      return res.status(404).json({ message: "User not found" });
+      const user = await User.findById(userId);
+      if (!user) {
+        console.error("User not found:", userId);
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.watchedVideos.includes(lectureId)) {
+        console.error("Video already watched:", lectureId);
+        return res.status(400).json({ message: "Video already watched" });
+      }
+
+      user.watchedVideos.push(lectureId);
+      await user.save();
+
+      console.log("Video marked as watched:", lectureId);
+      res
+        .status(200)
+        .json({
+          message: "Video marked as watched",
+          watchedVideos: user.watchedVideos,
+        });
+    } catch (error) {
+      console.error("Error marking video as watched:", error);
+      res
+        .status(500)
+        .json({ message: "Error marking video as watched", error });
     }
-    if (user.watchedVideos.includes(lectureId)) {
-      console.error("Video already watched:", lectureId);
-      return res.status(400).json({ message: "Video already watched" });
-    }
-
-    user.watchedVideos.push(lectureId);
-    await user.save();
-
-    console.log("Video marked as watched:", lectureId);
-    res.status(200).json({ message: "Video marked as watched", watchedVideos: user.watchedVideos });
-  } catch (error) {
-    console.error("Error marking video as watched:", error);
-    res.status(500).json({ message: "Error marking video as watched", error });
   }
-});
+);
 
-router.get("/user/watched-videos", authenticate, async (req, res) => {
+router.get("/watched-videos", authenticate, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("watchedVideos");
     if (!user) {
