@@ -73,7 +73,7 @@ exports.forgotPassword = async (req, res) => {
     await user.save();
 
     // Send email
-    const resetUrl = `http://localhost:3000/auth/reset-password/${resetToken}`;
+    const resetUrl = `https://learn-with-musfiq-client.vercel.app/auth/reset-password/${resetToken}`;
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
