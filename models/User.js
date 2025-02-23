@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["admin", "user"], default: "user" },
   enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
   watchedVideos: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lecture" }],
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 userSchema.pre("save", async function (next) {
