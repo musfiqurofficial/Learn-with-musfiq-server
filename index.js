@@ -33,7 +33,7 @@ mongoose
 
 // Default route
 app.get("/", (req, res) => {
-  res.send("Welcome to the Learn with MRN Backend!");
+  res.send("Welcome to the Learn with MRN API!");
 });
 
 // Handle 404 errors
