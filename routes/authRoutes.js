@@ -11,6 +11,8 @@ router.get("/me", authMiddleware.authenticate, authController.getMe);
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/reset-password/:token", authController.resetPassword);
 
+router.post("/send-verification-code", authController.sendVerificationCode);
+router.post("/verify-code", authController.verifyCode);
 
 router.get(
   "/protected",
