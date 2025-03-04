@@ -1,8 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+
 const authRoutes = require("./routes/authRoutes");
-const courseRoutes = require("./routes/courseRoutes");
 
 require("dotenv").config();
 
@@ -14,7 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api", courseRoutes);
+
 // MongoDB connection
 const MONGO_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5100;
@@ -33,7 +33,7 @@ mongoose
 
 // Default route
 app.get("/", (req, res) => {
-  res.send("Welcome to the Learn with MRN API!!");
+  res.send("Welcome to the EasyLink-ERP!");
 });
 
 // Handle 404 errors
